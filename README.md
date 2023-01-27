@@ -82,7 +82,7 @@ Create a Dynatrace token ( left menu Access TOken/Create a new token), this toke
 * Read configuration
 * Write configuration
 * Paas integration - installer downloader
-<p align="center"><img src="/image/operator_token.png" width="40%" alt="operator token" /></p>
+  ![token_operator](assets/operator_token.png)
 
 Save the value of the token . We will use it later to store in a k8S secret
 ```
@@ -94,7 +94,7 @@ Create a Dynatrace token with the following scope:
 * Ingest OpenTelemetry traces
 * Ingest logs (logs.ingest)
 * Ingest events
-<p align="center"><img src="/image/data_ingest.png" width="40%" alt="data token" /></p>
+  ![token_ingest](assets/data_ingest.png)
 Save the value of the token . We will use it later to store in a k8S secret
 
 ```
