@@ -52,6 +52,7 @@ you need to add an extra args to nginx pod:
 #### Update ingress Rules
 ```
 sed -i "s,IP_TO_REPLACE,$IP," argocd/argo-access-service.yaml
+sed -i "s,IP_TO_REPLACE,$IP," fib3r/helm/fib3r/templates/service.yaml
 ```
 
 

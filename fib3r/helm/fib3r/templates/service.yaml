@@ -5,10 +5,29 @@ metadata:
   name: fib3r
   namespace: "{{ .Values.namespace }}"
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
     app: fib3r
   ports:
   - name: http
     port: 80
     targetPort: 30000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: fib3r-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: "fib3r.34.159.208.207.nip.io"
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name: fib3r
+                port:
+                  number: 80
