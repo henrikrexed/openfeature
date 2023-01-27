@@ -1,20 +1,4 @@
-# Is it Observable
-<p align="center"><img src="/image/logo.png" width="40%" alt="Is It observable Logo" /></p>
-
-## Episode : What is Continuous Profiling and What is OpenFeature
-This repository contains the files utilized during the tutorial presented in the dedicated IsItObservable episode related to Pyroscope.
-<p align="center"><img src="/image/pyroscope.png" width="40%" alt="pyroscope Logo" /></p>
-
-What you will learn
-* How to use the [Pyroscope](https://pyroscope.io/)
-
-This repository showcase the usage of Pyroscope  with :
-* The Otel-demo
-* The OpenTelemetry Operator
-* Nginx ingress controller
-* Dynatrace
-
-We will send the Telemetry data produced by the Otel-demo application Dynatrace.
+# OpenFeature demo
 
 ## Prerequisite
 The following tools need to be install on your machine :
