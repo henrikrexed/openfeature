@@ -1,0 +1,19 @@
+{
+ "description": null,
+ "entitySelectorBasedRules": [
+    {
+        "enabled": true,
+        "normalization": "LEAVE_TEXT_AS_IS",
+        "valueFormat": "OpenFeature",
+        "entitySelector": "type(\"SYNTHETIC_TEST\"),entityName(\"OpenFeature\")"
+    },
+    {
+    "enabled": true,
+    "entitySelector": "type(\"APPLICATION\"),entityName(\"OpenFeature\")",
+    "normalization": "LEAVE_TEXT_AS_IS",
+    "valueFormat": "OpenFeature"
+    }
+ ],
+ "name": "{{.name}}",
+ "rules": []
+}

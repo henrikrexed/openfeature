@@ -1,0 +1,20 @@
+{
+ "aggregation": "FIRST",
+ "confidential": false,
+ "dataSources": [
+  {
+   "enabled": true,
+   "source": "SPAN_ATTRIBUTE",
+   "spanAttributeKey": "feature_flag.provider_name",
+   "valueProcessing": {
+    "splitAt": "",
+    "trim": false
+   }
+  }
+ ],
+ "dataType": "STRING",
+ "enabled": true,
+ "name": "{{.name}}",
+ "normalization": "ORIGINAL",
+ "skipPersonalDataMasking": false
+}

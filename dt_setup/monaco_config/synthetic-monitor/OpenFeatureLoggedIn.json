@@ -1,0 +1,247 @@
+{
+    "anomalyDetection": {
+     "loadingTimeThresholds": {
+      "enabled": true,
+      "thresholds": []
+     },
+     "outageHandling": {
+      "globalOutage": true,
+      "globalOutagePolicy": {
+       "consecutiveRuns": 1
+      },
+      "localOutage": false,
+      "localOutagePolicy": {
+       "affectedLocations": null,
+       "consecutiveRuns": null
+      },
+      "retryOnError": true
+     }
+    },
+    "automaticallyAssignedApps": [ "{{ .openFeatureAppId }}" ],
+    "createdFrom": "API",
+    "enabled": true,
+    "events": [
+     {
+      "name": "Loading of OpenFeature Homepage",
+      "sequenceNumber": 1
+     },
+     {
+      "name": "click on \"Login\"",
+      "sequenceNumber": 2
+     },
+     {
+      "name": "click on \"Email\"",
+      "sequenceNumber": 3
+     },
+     {
+      "name": "keystrokes on \"Email\"",
+      "sequenceNumber": 4
+     },
+     {
+      "name": "click on \"Login\"",
+      "sequenceNumber": 5
+     },
+     {
+      "name": "click on \"∑\"",
+      "sequenceNumber": 6
+     }
+    ],
+    "frequencyMin": 0,
+    "keyPerformanceMetrics": {
+     "loadActionKpm": "VISUALLY_COMPLETE",
+     "xhrActionKpm": "VISUALLY_COMPLETE"
+    },
+    "locations": [ "{{ .geolocation }}" ],
+    "managementZones": [],
+    "manuallyAssignedApps": [],
+    "name": "{{ .name }}",
+    "script": {
+     "configuration": {
+      "chromiumStartupFlags": {
+       "disable-web-security": false
+      },
+      "device": {
+       "deviceName": "Desktop",
+       "orientation": "landscape"
+      }
+     },
+     "events": [
+      {
+       "description": "Loading of OpenFeature Homepage",
+       "type": "navigate",
+       "url": "{{ .url }}",
+       "validate": [
+        {
+         "failIfFound": false,
+         "isRegex": false,
+         "match": "Login",
+         "type": "text_match"
+        }
+       ],
+       "wait": {
+        "waitFor": "page_complete"
+       }
+      },
+      {
+       "button": 0,
+       "description": "click on \"Login\"",
+       "target": {
+        "locators": [
+         {
+          "type": "css",
+          "value": "button[type=\"button\"]:eq(1)"
+         },
+         {
+          "type": "css",
+          "value": "button:contains(\"Login\")"
+         },
+         {
+          "type": "css",
+          "value": ".MuiButtonBase-root:eq(1)"
+         },
+         {
+          "type": "css",
+          "value": "#root div div:nth-child(2) div header div button:nth-child(3)"
+         },
+         {
+          "type": "css",
+          "value": "#root div div div.MuiBox-root header.MuiPaper-root div.MuiToolbar-root button.MuiButtonBase-root:eq(1)"
+         }
+        ]
+       },
+       "type": "click",
+       "wait": {
+        "waitFor": "next_event"
+       }
+      },
+      {
+       "button": 0,
+       "description": "click on \"Email\"",
+       "target": {
+        "locators": [
+         {
+          "type": "css",
+          "value": "#mui-2"
+         },
+         {
+          "type": "css",
+          "value": "input[type=\"text\"]"
+         },
+         {
+          "type": "css",
+          "value": ".MuiInputBase-input:eq(1)"
+         },
+         {
+          "type": "css",
+          "value": "html body:nth-child(8) div:nth-child(5) div:nth-child(3) div div div:nth-child(3) div:nth-child(2) div:nth-child(2) input"
+         },
+         {
+          "type": "css",
+          "value": "#mui-2"
+         }
+        ]
+       },
+       "type": "click"
+      },
+      {
+       "description": "keystrokes on \"Email\"",
+       "masked": false,
+       "simulateBlurEvent": true,
+       "target": {
+        "locators": [
+         {
+          "type": "css",
+          "value": "#mui-2"
+         },
+         {
+          "type": "css",
+          "value": "input[type=\"text\"]"
+         },
+         {
+          "type": "css",
+          "value": ".MuiInputBase-input:eq(1)"
+         },
+         {
+          "type": "css",
+          "value": "html body:nth-child(8) div:nth-child(5) div:nth-child(3) div div div:nth-child(3) div:nth-child(2) div:nth-child(2) input"
+         },
+         {
+          "type": "css",
+          "value": "#mui-2"
+         }
+        ]
+       },
+       "textValue": "{{ .loginEmailAddress }}",
+       "type": "keystrokes"
+      },
+      {
+       "button": 0,
+       "description": "click on \"Login\"",
+       "target": {
+        "locators": [
+         {
+          "type": "css",
+          "value": "button[type=\"button\"]:eq(4)"
+         },
+         {
+          "type": "css",
+          "value": "button:contains(\"Login\"):eq(1)"
+         },
+         {
+          "type": "css",
+          "value": ".MuiButtonBase-root:eq(4)"
+         },
+         {
+          "type": "css",
+          "value": "html body:nth-child(8) div:nth-child(5) div:nth-child(3) div div div:nth-child(4) button:nth-child(2)"
+         },
+         {
+          "type": "css",
+          "value": "body div.MuiModal-root div.MuiBox-root div.step-login div div button.MuiButtonBase-root:eq(1)"
+         }
+        ]
+       },
+       "type": "click",
+       "wait": {
+        "waitFor": "next_event"
+       }
+      },
+      {
+       "button": 0,
+       "description": "click on \"∑\"",
+       "target": {
+        "locators": [
+         {
+          "type": "css",
+          "value": "span:contains(\"∑\")"
+         },
+         {
+          "type": "css",
+          "value": "#root div div:nth-child(3) div div:nth-child(2) div:nth-child(2) div span"
+         },
+         {
+          "type": "css",
+          "value": "#root div div div.MuiPaper-root div div div span"
+         }
+        ]
+       },
+       "type": "click",
+       "validate": [
+        {
+         "failIfFound": false,
+         "isRegex": false,
+         "match": "63245986",
+         "type": "text_match"
+        }
+       ],
+       "wait": {
+        "waitFor": "network"
+       }
+      }
+     ],
+     "type": "clickpath",
+     "version": "1.0"
+    },
+    "tags": [],
+    "type": "BROWSER"
+   }

@@ -1,0 +1,144 @@
+apiVersion: lifecycle.keptn.sh/v1alpha1
+kind: KeptnTaskDefinition
+metadata:
+  name: trigger-dt-synthetics
+  namespace: "default"
+spec:
+  function:
+    parameters:
+      map:
+        dt_url: "DT_TENANT_URL_TO_REPLACE"
+    secureParameters:
+      secret: dt-synth-api-token
+    inline:
+      code: |
+        // WIP
+
+        console.log("Triggering on-demand synthetics");
+        let SLEEP_TIME = 5;
+        let TIMEOUT = 120;
+
+        let parameter_map = Deno.env.get("DATA");
+        let data = JSON.parse(parameter_map);
+        let dt_url = data.dt_url;
+        let dt_api_token = Deno.env.get('SECURE_DATA');
+
+        let dt_api_endpoint = `${dt_url}/api/v2/synthetic/executions/batch`;
+        console.log(`dt_api_endpoint: ${dt_api_endpoint}`);
+        let dt_api_token_formatted = `Api-Token ${dt_api_token}`;
+
+        let body = `{
+          "processingMode": "EXECUTIONS_DETAILS_ONLY",
+          "failOnPerformanceIssue": false,
+          "failOnSslWarning": true,
+          "stopOnProblem": false,
+          "takeScreenshotsOnSuccess": false,
+          "group": {
+            "tags": [ "app:OpenFeature" ]
+          }
+        }`
+
+        try {
+          let trigger_response = await fetch(dt_api_endpoint, {
+            method: "POST",
+            headers: {
+            "Content-Type": "application/json; charset=utf-8",
+            "accept": "application/json; charset=utf-8",
+            "Authorization": dt_api_token_formatted,
+            },
+            body: body
+          });
+
+          /* The response should contain:
+          * A "batchId" field - use this to poll and lookup the status
+          * A "triggeringProblemsCount" field - if this is > 0 something went wrong triggering the synthetics
+          * A "triggeringProblemsDetails" array - if above is > 0 then this should be filled with some useful info
+          * A "triggeredCount" - An int which should match how many tagged synthetics you have (in our case 2)
+          * A "triggered" array - Contains the full juicy details of everything
+          */
+
+          let trigger_response_json = await trigger_response.json()
+
+          if (trigger_response_json.triggeringProblemsCount == 0) {
+              console.log(`Successfully triggered batch ID: ${trigger_response_json.batchId}`)
+              console.log(trigger_response_json)
+          }
+          else {
+              console.error("Error triggering DT synthetics. Exiting.")
+              console.error(trigger_response_json.triggeringProblemsDetails)
+              Deno.exit(0);
+          }
+
+          // Save batch ID
+          let batch_id = trigger_response_json.batchId
+          
+          // Wait until a batch result is received
+          let dt_api_get_batch_endpoint_formatted = `${dt_api_endpoint}/${batch_id}`
+          console.log(dt_api_get_batch_endpoint_formatted)
+
+          /* Keep track of time spent waiting for "FAILED" or "RUNNING"
+          * If it is 1 or above, we have spent too long waiting and should exit
+          */
+          let TIME_SPENT = 0;
+
+          let batch_response_json = {} // Empty for now. Will be populated on SUCCESS
+
+          while(TIME_SPENT / TIMEOUT < 1) {
+              try {
+                let get_batch_status_response = await fetch(dt_api_get_batch_endpoint_formatted, {
+                    method: "GET",
+                    headers: {
+                    "Content-Type": "application/json; charset=utf-8",
+                    "accept": "application/json; charset=utf-8",
+                    "Authorization": dt_api_token_formatted,
+                    }
+                  });
+
+                let get_batch_response_json = await get_batch_status_response.json()
+                console.log(get_batch_response_json)
+
+                // Do it this way because the batch can be in other states: eg. "RUNNING"
+                // So this way we avoid dealing with every other potential case
+                if (get_batch_response_json.batchStatus == "SUCCESS" || get_batch_response_json.batchStatus == "FAILED") {
+
+                    if (get_batch_response_json.batchStatus == "FAILED") {
+                        console.error(`Batch failed. Please investigate. ${get_batch_response_json}`);
+                        Deno.exit(0);
+                    }
+
+                    // batchStatus == "Success" break from loop
+                    batch_response_json = get_batch_response_json; // Set so it is accessible outside while
+                    break;
+
+                }
+                else {
+                    console.log(`Batch status is: ${get_batch_response_json.batchStatus}. Sleep for ${SLEEP_TIME}s then re-check.`);
+                    await sleep(SLEEP_TIME)
+                }
+
+                TIME_SPENT += SLEEP_TIME; // Increment time spent
+
+              }
+              catch (error) {
+                  console.error(`Error getting batch status: ${error}`);
+                  console.error("Exiting");
+                  Deno.exit(0);
+              }
+
+              /* Batch has finished running
+              * Whether it was successful or not
+              * We can now continue to work
+              */
+          }
+
+          /* 
+          * If here, we have a successful batch run
+          * Exit successfully
+          */
+          Deno.exit(0)
+
+        }
+        catch (error) {
+          console.error(`Could not trigger synthetics: ${error}`);
+          Deno.exit(0);
+        }

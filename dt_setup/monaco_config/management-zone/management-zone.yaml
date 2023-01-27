@@ -1,0 +1,4 @@
+config:
+- openfeature: openfeature.json
+openfeature:
+- name: openfeature

@@ -1,0 +1,13 @@
+image: ghcr.io/open-feature/playground-app:v0.6.3
+replicaCount: 1
+namespace: "default"
+klt:
+  appname: "fib3r-app"
+  servicename: "fib3r"
+  version: "0.0.44"
+  stage: "default"
+  predeploytasks: ""
+  postdeploytasks: "deployment-hello,trigger-dt-synthetics"
+fibservice:
+  user: "my-fib3r-userY"
+  pass: "my-fib3r-passwordY"

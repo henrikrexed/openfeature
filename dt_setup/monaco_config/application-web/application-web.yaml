@@ -1,0 +1,15 @@
+config:
+- OpenFeature: OpenFeature.json
+
+OpenFeature:
+- name: OpenFeature
+- ff_evaluated_variant_display_name: "feature_flag_evaluated_variant"
+- ff_evaluated_variant_key: "feature_flag_evaluated_variant"
+- ff_evaluated_variant_id: "monaco_config/request-attributes/featureflagevaluatedvariant.id"
+- ff_flag_key_display_name: "feature_flag_flag_key"
+- ff_flag_key: "feature_flag_key"
+- ff_flag_key_id: "monaco_config/request-attributes/featureflagkey.id"
+- ff_provider_display_name: "feature_flag_provider_name"
+- ff_provider_name_key: "feature_flag_provider_name"
+- ff_provider_id: "monaco_config/request-attributes/featureflagprovidername.id"
+  

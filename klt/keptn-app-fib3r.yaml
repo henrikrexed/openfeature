@@ -1,0 +1,10 @@
+apiVersion: lifecycle.keptn.sh/v1alpha1
+kind: KeptnApp
+metadata:
+  name: "fib3r-app"
+  namespace: "default"
+spec:
+  version: "0.0.44"
+  workloads:
+    - name: "fib3r"
+      version: "0.0.44"

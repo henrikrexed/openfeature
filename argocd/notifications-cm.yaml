@@ -1,0 +1,188 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-notifications-cm
+data:
+  service.webhook.webhooksite: |
+    url: "$webhook-env"
+    headers:
+    - name: "accept"
+      value: "application/json; charset=utf-8"
+    - name: "Content-Type"
+      value: "application/json; charset=utf-8"
+    - name: "Authorization"
+      value: "Api-Token $dt-api-token"
+  service.webhook.dt_service: |
+    url: "$dt-env/api/v2/events/ingest"
+    headers:
+    - name: "accept"
+      value: "application/json; charset=utf-8"
+    - name: "Content-Type"
+      value: "application/json; charset=utf-8"
+    - name: "Authorization"
+      value: "Api-Token $dt-api-token"
+  service.webhook.dt_application: |
+    url: "$dt-env/api/v2/events/ingest"
+    headers:
+    - name: "accept"
+      value: "application/json; charset=utf-8"
+    - name: "Content-Type"
+      value: "application/json; charset=utf-8"
+    - name: "Authorization"
+      value: "Api-Token $dt-api-token"
+  service.webhook.dt_synthetic_test: |
+    url: "$dt-env/api/v2/events/ingest"
+    headers:
+    - name: "accept"
+      value: "application/json; charset=utf-8"
+    - name: "Content-Type"
+      value: "application/json; charset=utf-8"
+    - name: "Authorization"
+      value: "Api-Token $dt-api-token"
+  template.outofsync: |
+    webhook:
+      dt_service:
+        method: POST
+        body: |
+          {
+            "eventType": "CUSTOM_INFO",
+            "title": "{{.app.metadata.name}} out of sync",
+            "timeout": 5,
+            "entitySelector": "type(SERVICE),tag([Environment]DT_RELEASE_PRODUCT:fib3r-app)",
+            "properties": {
+                "app name": "{{.app.metadata.name}}",
+                "revision": "{{.app.status.sync.revision}}",
+                "dt.event.deployment.name": "{{ .app.metadata.name }}",
+                "dt.event.description": "{{ .app.metadata.name }} out of sync",
+                "dt.event.is_rootcause_relevant": false,
+                "history": "https://github.com/agardnerit/openfeature-perform2023/commit/{{.app.status.sync.revision}}"
+            }
+          }
+      dt_application:
+        method: POST
+        body: |
+          {
+            "eventType": "CUSTOM_INFO",
+            "title": "{{.app.metadata.name}} out of sync",
+            "timeout": 5,
+            "entitySelector": "type(APPLICATION),tag(app:OpenFeature)",
+            "properties": {
+                "app name": "{{.app.metadata.name}}",
+                "revision": "{{.app.status.sync.revision}}",
+                "dt.event.deployment.name": "{{ .app.metadata.name }}",
+                "dt.event.description": "{{ .app.metadata.name }} out of sync",
+                "dt.event.is_rootcause_relevant": false,
+                "history": "https://github.com/agardnerit/openfeature-perform2023/commit/{{.app.status.sync.revision}}"
+            }
+          }
+      dt_synthetic_test:
+        method: POST
+        body: |
+          {
+            "eventType": "CUSTOM_INFO",
+            "title": "{{.app.metadata.name}} out of sync",
+            "timeout": 5,
+            "entitySelector": "type(SYNTHETIC_TEST),tag(app:OpenFeature)",
+            "properties": {
+                "app name": "{{.app.metadata.name}}",
+                "revision": "{{.app.status.sync.revision}}",
+                "dt.event.deployment.name": "{{ .app.metadata.name }}",
+                "dt.event.description": "{{ .app.metadata.name }} out of sync",
+                "dt.event.is_rootcause_relevant": false,
+                "history": "https://github.com/agardnerit/openfeature-perform2023/commit/{{.app.status.sync.revision}}"
+            }
+          }
+      webhooksite:
+        method: POST
+        body: |
+          {
+            "eventType": "CUSTOM_INFO",
+            "title": "{{.app.metadata.name}} out of sync",
+            "timeout": 5,
+            "entitySelector": "type(SERVICE),tag([Environment]DT_RELEASE_PRODUCT:fib3r-app)",
+            "properties": {
+                "app name": "{{.app.metadata.name}}",
+                "revision": "{{.app.status.sync.revision}}",
+                "dt.event.deployment.name": "{{ .app.metadata.name }}",
+                "dt.event.description": "{{ .app.metadata.name }} out of sync",
+                "dt.event.is_rootcause_relevant": false,
+                "history": "https://github.com/agardnerit/openfeature-perform2023/commit/{{.app.status.sync.revision}}"
+            }
+          }
+  template.insync: |
+    webhook:
+      dt_service:
+        method: POST
+        body: |
+          {
+            "eventType": "CUSTOM_DEPLOYMENT",
+            "title": "{{.app.metadata.name}} in sync",
+            "timeout": 5,
+            "entitySelector": "type(SERVICE),tag([Environment]DT_RELEASE_PRODUCT:fib3r-app)",
+            "properties": {
+                "app name": "{{.app.metadata.name}}",
+                "revision": "{{.app.status.sync.revision}}",
+                "dt.event.deployment.name": "{{ .app.metadata.name }}",
+                "dt.event.description": "{{ .app.metadata.name }} in sync",
+                "dt.event.is_rootcause_relevant": true,
+                "history": "https://github.com/agardnerit/openfeature-perform2023/commit/{{.app.status.sync.revision}}"
+            }
+          }
+      dt_application:
+        method: POST
+        body: |
+          {
+            "eventType": "CUSTOM_DEPLOYMENT",
+            "title": "{{.app.metadata.name}} in sync",
+            "timeout": 5,
+            "entitySelector": "type(APPLICATION),tag(app:OpenFeature)",
+            "properties": {
+                "app name": "{{.app.metadata.name}}",
+                "revision": "{{.app.status.sync.revision}}",
+                "dt.event.deployment.name": "{{ .app.metadata.name }}",
+                "dt.event.description": "{{ .app.metadata.name }} in sync",
+                "dt.event.is_rootcause_relevant": true,
+                "history": "https://github.com/agardnerit/openfeature-perform2023/commit/{{.app.status.sync.revision}}"
+            }
+          }
+      dt_synthetic_test:
+        method: POST
+        body: |
+          {
+            "eventType": "CUSTOM_DEPLOYMENT",
+            "title": "{{.app.metadata.name}} in sync",
+            "timeout": 5,
+            "entitySelector": "type(SYNTHETIC_TEST),tag(app:OpenFeature)",
+            "properties": {
+                "app name": "{{.app.metadata.name}}",
+                "revision": "{{.app.status.sync.revision}}",
+                "dt.event.deployment.name": "{{ .app.metadata.name }}",
+                "dt.event.description": "{{ .app.metadata.name }} in sync",
+                "dt.event.is_rootcause_relevant": true,
+                "history": "https://github.com/agardnerit/openfeature-perform2023/commit/{{.app.status.sync.revision}}"
+            }
+          }
+      webhooksite:
+        method: POST
+        body: |
+          {
+            "eventType": "CUSTOM_DEPLOYMENT",
+            "title": "{{.app.metadata.name}} in sync",
+            "timeout": 5,
+            "entitySelector": "type(SERVICE),tag([Environment]DT_RELEASE_PRODUCT:fib3r-app)",
+            "properties": {
+                "app name": "{{.app.metadata.name}}",
+                "revision": "{{.app.status.sync.revision}}",
+                "dt.event.deployment.name": "{{ .app.metadata.name }}",
+                "dt.event.description": "{{ .app.metadata.name }} in sync",
+                "dt.event.is_rootcause_relevant": true,
+                "history": "https://github.com/agardnerit/openfeature-perform2023/commit/{{.app.status.sync.revision}}"
+            }
+          }
+  trigger.on-out-of-sync-status: |
+    - when: app.status.sync.status == 'OutOfSync'
+      send: [outofsync]
+  trigger.on-in-sync-status: |
+    - when: app.status.sync.status == 'Synced' and app.status.operationState.phase in ['Succeeded']
+      send: [insync]

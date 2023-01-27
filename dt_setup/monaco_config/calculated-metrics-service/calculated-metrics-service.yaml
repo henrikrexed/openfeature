@@ -1,0 +1,34 @@
+config:
+- ResponseTimebyFibN: ResponseTimebyFibN.json
+- calculationsbyalgoandservice: calculationsbyalgoandservice.json
+- flagsbykeyandvariant: flagsbykeyandvariant.json
+
+ResponseTimebyFibN:
+- name: Response Time by FibN
+- service_tag_key: "DT_RELEASE_PRODUCT"
+- service_tag_value: "fib3r-app"
+- request_attribute: "dt_setup/request-attributes/FibN.name"
+- dimension: "{RequestAttribute:FibN}"
+- dimension_name: "dt_setup/request-attributes/FibN.name"
+- metric_key: "calc:service.responsetimebyfibn"
+- topX: "10"
+
+calculationsbyalgoandservice:
+- name: calculations_by_algo_and_service
+- service_tag_key: "DT_RELEASE_PRODUCT"
+- service_tag_value: "fib3r-app"
+- endpoint_value: "/calculate"
+- dimension: "{Request:Name} / {RequestAttribute:feature_flag.evaluated_variant}"
+- dimension_name: "algo - service"
+- metric_key: "calc:service.calculations_by_algo_and_service"
+- topX: "10"
+
+flagsbykeyandvariant:
+- name: flags by key and variant
+- request_attribute: "dt_setup/request-attributes/featureflagkey.name"
+- service_tag_key: "DT_RELEASE_PRODUCT"
+- service_tag_value: "fib3r-app"
+- dimension: "{RequestAttribute:feature_flag.flag_key} - {RequestAttribute:feature_flag.evaluated_variant}"
+- dimension_name: "key - variant"
+- metric_key: "calc:service.ffkeybyvariant"
+- topX: "10"

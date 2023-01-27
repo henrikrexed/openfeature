@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ .Values.klt.servicename }}"
+  namespace: "{{ .Values.namespace }}"
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: "{{ .Values.klt.servicename }}"
+  template:
+    metadata:
+      labels:
+        app: "{{ .Values.klt.servicename }}"
+        app.kubernetes.io/part-of: "{{ .Values.klt.appname }}"
+      annotations:
+        app: "{{ .Values.klt.servicename }}"
+        app.kubernetes.io/name: "{{ .Values.klt.servicename }}"
+        app.kubernetes.io/part-of: "{{ .Values.klt.appname }}"
+        app.kubernetes.io/version: "{{ .Values.klt.version }}"
+        keptn.sh/post-deployment-tasks: "{{ .Values.klt.postdeploytasks }}"
+        stage: "{{ .Values.klt.stage }}"
+    spec:
+      containers:
+        - name: "{{ .Values.klt.servicename }}"
+          image: "{{ .Values.image }}"
+          imagePullPolicy: "Always"
+          ports:
+            - containerPort: 30001
+          env:
+            - name: SERVICE_NAME
+              value: "{{ .Values.klt.servicename }}-{{ .Values.klt.stage }}"
+            - name: ENVIRONMENT
+              value: "{{ .Values.klt.stage }}"
+            - name: OTEL_EXPORTER_JAEGER_AGENT_HOST
+              value: "jaeger-agent.jaeger.svc.cluster.local"
+            - name: OTEL_EXPORTER_JAEGER_AGENT_PORT
+              value: "6832"
+            - name: OTEL_SERVICE_NAME
+              value: "{{ .Values.klt.servicename }}-{{ .Values.klt.stage }}"
+            - name: FIB_SERVICE_URL
+              value: "http://fib3r.{{ .Values.klt.stage }}.svc.cluster.local:30000"
+            - name: FIB_SERVICE_USER
+              value: "{{ .Values.fibservice.user }}"
+            - name: FIB_SERVICE_PASS
+              value: "{{ .Values.fibservice.pass }}"
+            - name: NODE_ENV
+              value: production
+          resources:
+            requests:
+              cpu: 40m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+        - name: flagd
+          image: ghcr.io/open-feature/flagd:v0.3.0
+          args: ["start", "--uri", "file:/etc/flagd/config.json"]
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/flagd
+      volumes:
+        - name: config-volume
+          configMap:
+            name: feature-flags

@@ -1,0 +1,20 @@
+{
+ "aggregation": "ALL_DISTINCT_VALUES",
+ "confidential": false,
+ "dataSources": [
+  {
+   "enabled": true,
+   "source": "SPAN_ATTRIBUTE",
+   "spanAttributeKey": "feature_flag.evaluated_variant",
+   "valueProcessing": {
+    "splitAt": "",
+    "trim": false
+   }
+  }
+ ],
+ "dataType": "STRING",
+ "enabled": true,
+ "name": "{{.name}}",
+ "normalization": "ORIGINAL",
+ "skipPersonalDataMasking": false
+}

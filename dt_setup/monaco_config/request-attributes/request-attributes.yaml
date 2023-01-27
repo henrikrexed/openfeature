@@ -1,0 +1,17 @@
+config:
+- FibN: FibN.json
+- featureflagevaluatedvariant: featureflagevaluatedvariant.json
+- featureflagkey: featureflagkey.json
+- featureflagprovidername: featureflagprovidername.json
+
+FibN:
+- name: FibN
+
+featureflagevaluatedvariant:
+- name: "feature_flag.evaluated_variant"
+
+featureflagkey:
+- name: "feature_flag.flag_key"
+
+featureflagprovidername:
+- name: "feature_flag.provider_name"

@@ -1,0 +1,110 @@
+{
+    "anomalyDetection": {
+     "loadingTimeThresholds": {
+      "enabled": true,
+      "thresholds": []
+     },
+     "outageHandling": {
+      "globalOutage": true,
+      "globalOutagePolicy": {
+       "consecutiveRuns": 1
+      },
+      "localOutage": false,
+      "localOutagePolicy": {
+       "affectedLocations": null,
+       "consecutiveRuns": null
+      },
+      "retryOnError": true
+     }
+    },
+    "automaticallyAssignedApps": [
+     "{{ .openFeatureAppId }}"
+    ],
+    "createdFrom": "API",
+    "enabled": true,
+    "events": [
+     {
+      "name": "Loading of OpenFeature Homepage",
+      "sequenceNumber": 1
+     },
+     {
+      "name": "click on \"∑\"",
+      "sequenceNumber": 2
+     }
+    ],
+    "frequencyMin": 0,
+    "keyPerformanceMetrics": {
+     "loadActionKpm": "VISUALLY_COMPLETE",
+     "xhrActionKpm": "VISUALLY_COMPLETE"
+    },
+    "locations": [ "{{ .geolocation }}" ],
+    "managementZones": [],
+    "manuallyAssignedApps": [],
+    "name": "{{ .name }}",
+    "script": {
+     "configuration": {
+      "chromiumStartupFlags": {
+       "disable-web-security": false
+      },
+      "device": {
+       "deviceName": "Desktop",
+       "orientation": "landscape"
+      },
+      "userAgent": "{{ .user_agent }}"
+     },
+     "events": [
+      {
+       "description": "Loading of OpenFeature Homepage",
+       "type": "navigate",
+       "url": "{{ .url }}",
+       "validate": [
+        {
+         "failIfFound": false,
+         "isRegex": false,
+         "match": "Login",
+         "type": "text_match"
+        }
+       ],
+       "wait": {
+        "waitFor": "page_complete"
+       }
+      },
+      {
+       "button": 0,
+       "description": "click on \"∑\"",
+       "target": {
+        "locators": [
+         {
+          "type": "css",
+          "value": "div:contains(\"∑\"):eq(5)"
+         },
+         {
+          "type": "css",
+          "value": "#root div div:nth-child(3) div div:nth-child(2) div:nth-child(2)"
+         },
+         {
+          "type": "css",
+          "value": "#root div div div.MuiPaper-root div div:eq(2)"
+         }
+        ]
+       },
+       "type": "click",
+       "validate": [
+        {
+         "failIfFound": false,
+         "isRegex": false,
+         "match": "63245986",
+         "type": "text_match"
+        }
+       ],
+       "wait": {
+        "waitFor": "network"
+       }
+      }
+     ],
+     "type": "clickpath",
+     "version": "1.0"
+    },
+    "tags": [],
+    "type": "BROWSER"
+   }

@@ -1,0 +1,27 @@
+{
+ "description": null,
+ "dimensionalRules": [],
+ "entitySelectorBasedRules": [
+  {
+   "enabled": true,
+   "entitySelector": "type(\"SYNTHETIC_TEST\"),tag(\"app:OpenFeature\")"
+  },
+  {
+   "enabled": true,
+   "entitySelector": "type(SERVICE),tag(\"app:OpenFeature\")"
+  },
+  {
+   "enabled": true,
+   "entitySelector": "type(\"APPLICATION\"),tag(\"app:OpenFeature\")"
+  },
+  {
+    "enabled": true,
+    "entitySelector": "type(\"PROCESS_GROUP\"),tag(\"app:OpenFeature\")"
+  }, {
+    "enabled": true,
+    "entitySelector": "type(\"PROCESS_GROUP_INSTANCE\"),tag(\"app:OpenFeature\")"
+  }
+ ],
+ "name": "{{.name}}",
+ "rules": []
+}

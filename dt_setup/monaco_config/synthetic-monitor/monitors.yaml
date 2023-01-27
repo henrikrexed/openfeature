@@ -1,0 +1,43 @@
+config:
+- OpenFeatureDefault_Synthetic: OpenFeatureDefault.json
+- OpenFeatureLoggedIn_Synthetic: OpenFeatureLoggedIn.json
+- OpenFeatureDefault_RealUserAgent: OpenFeatureDefault.json
+- OpenFeatureLoggedIn_RealUserAgent: OpenFeatureLoggedIn.json
+
+OpenFeatureDefault_Synthetic:
+- name: "OpenFeature Default - Synthetic"
+- openFeatureAppId: "monaco_config/application-web/OpenFeature.id"
+- url: "http://OF_PUBLIC_ADDRESS_PLACEHOLDER"
+- geolocation: "GEOLOCATION-E01B833216FC3598"
+- tag_key: "app"
+- tag_value: "OpenFeature"
+- user_agent: "DynatraceSynthetic; fake"
+
+OpenFeatureLoggedIn_Synthetic:
+- name: "OpenFeature Logged In - Synthetic"
+- openFeatureAppId: "monaco_config/application-web/OpenFeature.id"
+- url: "http://OF_PUBLIC_ADDRESS_PLACEHOLDER"
+- geolocation: "GEOLOCATION-E01B833216FC3598"
+- tag_key: "app"
+- tag_value: "OpenFeature"
+- loginEmailAddress: "user@faas.com"
+- user_agent: "DynatraceSynthetic; fake"
+
+OpenFeatureDefault_RealUserAgent:
+- name: "OpenFeature Default - Real User"
+- openFeatureAppId: "monaco_config/application-web/OpenFeature.id"
+- url: "http://OF_PUBLIC_ADDRESS_PLACEHOLDER"
+- geolocation: "GEOLOCATION-E01B833216FC3598"
+- tag_key: "app"
+- tag_value: "OpenFeature"
+- user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36"
+
+OpenFeatureLoggedIn_RealUserAgent:
+- name: "OpenFeature Logged In - Real User"
+- openFeatureAppId: "monaco_config/application-web/OpenFeature.id"
+- url: "http://OF_PUBLIC_ADDRESS_PLACEHOLDER"
+- geolocation: "GEOLOCATION-E01B833216FC3598"
+- tag_key: "app"
+- tag_value: "OpenFeature"
+- loginEmailAddress: "user@faas.com"
+- user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36"

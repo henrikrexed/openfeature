@@ -1,0 +1,10 @@
+apiVersion: lifecycle.keptn.sh/v1alpha1
+kind: KeptnApp
+metadata:
+  name: "fibonacci-app"
+  namespace: "default"
+spec:
+  version: "0.0.17"
+  workloads:
+    - name: "fibonacci"
+      version: "0.0.17"

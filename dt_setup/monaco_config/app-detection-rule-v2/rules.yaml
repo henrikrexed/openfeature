@@ -1,0 +1,7 @@
+config:
+- openfeature: rule.json
+
+openfeature:
+- name: openfeature
+- address: "OF_PUBLIC_ADDRESS_PLACEHOLDER"
+- applicationID: "monaco_config/application-web/OpenFeature.id"

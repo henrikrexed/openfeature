@@ -1,0 +1,47 @@
+{
+ "conditions": [
+  {
+   "attribute": "REQUEST_NAME",
+   "comparisonInfo": {
+    "caseSensitive": false,
+    "comparison": "CONTAINS",
+    "negate": false,
+    "type": "STRING",
+    "value": "{{ .endpoint_value }}",
+    "values": null
+   }
+  }, {
+    "attribute": "SERVICE_TAG",
+    "comparisonInfo": {
+     "comparison": "EQUALS",
+     "negate": false,
+     "type": "TAG",
+     "value": {
+      "context": "ENVIRONMENT",
+      "key": "{{ .service_tag_key }}",
+      "value": "{{ .service_tag_value }}"
+     },
+     "values": null
+    }
+   }
+ ],
+ "dimensionDefinition": {
+  "dimension": "{{ .dimension }}",
+  "name": "{{ .dimension_name }}",
+  "placeholders": [],
+  "topX": "{{ .topX }}",
+  "topXAggregation": "AVERAGE",
+  "topXDirection": "DESCENDING"
+ },
+ "enabled": true,
+ "ignoreMutedRequests": false,
+ "managementZones": [],
+ "metricDefinition": {
+  "metric": "RESPONSE_TIME",
+  "requestAttribute": null
+ },
+ "name": "{{ .name }}",
+ "tsmMetricKey": "{{ .metric_key }}",
+ "unit": "MICRO_SECOND",
+ "unitDisplayName": null
+}

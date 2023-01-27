@@ -1,0 +1,12 @@
+image: ghcr.io/open-feature/playground-fib-service:v0.6.3
+replicaCount: 1
+namespace: "default"
+klt:
+  appname: "fibonacci-app"
+  servicename: "fibonacci"
+  version: "0.0.17"
+  stage: "default"
+  postdeploytasks: "deployment-hello"
+fibservice:
+  user: "my-fib3r-userY"
+  pass: "my-fib3r-passwordY"

@@ -1,0 +1,19 @@
+apiVersion: lifecycle.keptn.sh/v1alpha1
+kind: KeptnTaskDefinition
+metadata:
+  name: deployment-hello
+  namespace: "default"
+spec:
+  function:
+    parameters:
+      map:
+        url: "https://webhook.site/3af4b222-64a7-4db8-90a1-864a99e49726"
+    secureParameters:
+      secret: deno-demo-secret
+    inline:
+      code: |
+        console.log("Deployment Hello Task has been executed");
+
+        let foo = Deno.env.get('SECURE_DATA');
+        console.log(foo);
+        Deno.exit(0);

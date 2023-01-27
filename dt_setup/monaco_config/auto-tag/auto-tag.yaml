@@ -1,0 +1,4 @@
+config:
+- app: app.json
+app:
+- name: app
