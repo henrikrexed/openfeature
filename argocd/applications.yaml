@@ -1,0 +1,31 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: fibonacci
+spec:
+  destination:
+    name: ''
+    namespace: ''
+    server: 'https://kubernetes.default.svc'
+  source:
+    path: fibonacci/helm/fibonacci
+    repoURL: 'GITHUB_REPO_TO_REPLACE'
+    targetRevision: HEAD
+  project: default
+  syncPolicy:
+    automated: null
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: fib3r
+spec:
+  destination:
+    name: ''
+    namespace: ''
+    server: 'https://kubernetes.default.svc'
+  source:
+    path: fib3r/helm/fib3r
+    repoURL: 'GITHUB_REPO_TO_REPLACE'
+    targetRevision: HEAD
+  project: default

@@ -33,7 +33,7 @@ gcloud container clusters create "${NAME}" \
 
 
 ## Getting started
-### 0. Nginx Ingress Controller
+### 1. Nginx Ingress Controller
 ```
 helm upgrade --install ingress-nginx ingress-nginx  --repo https://kubernetes.github.io/ingress-nginx  --namespace ingress-nginx --create-namespace
 ```
@@ -53,11 +53,32 @@ you need to add an extra args to nginx pod:
 ```
 sed -i "s,IP_TO_REPLACE,$IP," argocd/argo-access-service.yaml
 sed -i "s,IP_TO_REPLACE,$IP," fib3r/helm/fib3r/templates/service.yaml
+sed -i "s,IP_TO_REPLACE,$IP," observability/ingress.yaml
+```
+
+### 2. Prometheus Operator
+```
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+helm install prometheus prometheus-community/kube-prometheus-stack
+kubectl apply -f observability/ingress.yaml
+PASSWORD_GRAFANA=$(kubectl get secret --namespace default prometheus-grafana -o jsonpath="{.data.admin-password}" | base64 --decode)
+USER_GRAFANA=$(kubectl get secret --namespace default prometheus-grafana -o jsonpath="{.data.admin-user}" | base64 --decode)
+```
+
+### 3. OpenTelemetry Operator
+#### 1. Cert-manager
+```
+kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.6.1/cert-manager.yaml
+kubectl wait pod -l app.kubernetes.io/component=webhook -n cert-manager --for=condition=Ready --timeout=2m
+```
+#### 2. OpenTelemetry Operator
+```
+kubectl apply -f https://github.com/open-telemetry/opentelemetry-operator/releases/latest/download/opentelemetry-operator.yaml
 ```
 
 
-
-### 1. Dynatrace Tenant
+### 4. Dynatrace Tenant
 #### 1. Dynatrace Tenant - start a trial
 If you don't have any Dyntrace tenant , then i suggest to create a trial using the following link : [Dynatrace Trial](https://bit.ly/3KxWDvY)
 Once you have your Tenant save the Dynatrace (including https) tenant URL in the variable `DT_TENANT_URL` (for example : https://dedededfrf.live.dynatrace.com)
@@ -65,6 +86,7 @@ Once you have your Tenant save the Dynatrace (including https) tenant URL in the
 DT_TENANT_URL=<YOUR TENANT URL>
 sed -i "s,DT_TENANT_URL_TO_REPLACE,$DT_TENANT_URL," dynatrace/dynakube.yaml
 sed -i "s,DT_TENANT_URL_TO_REPLACE,$DT_TENANT_URL," klt/trigger-dt-synthetics-ktd.yaml
+sed -i "s,DT_URL_TO_REPLACE,$DT_TENANT_URL," observability/otel-collector.yaml
 ```
 
 
@@ -100,6 +122,7 @@ Save the value of the token . We will use it later to store in a k8S secret
 
 ```
 DATA_INGEST_TOKEN=<YOUR TOKEN VALUE>
+sed -i "s,DT_TOKEN_TO_REPLACE,$DATA_INGEST_TOKEN," observability/otel-collector.yaml
 ```
 ##### Deploy the Dynatrace Operator 
 ```
@@ -111,7 +134,7 @@ kubectl -n dynatrace create secret generic dynakube --from-literal="apiToken=$DY
 kubectl apply -f dynatrace/dynakube.yaml -n dynatrace
 ```
 
-### 2. ArgoCD
+### 5. ArgoCD
 ```
 kubectl create namespace argocd
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
@@ -121,87 +144,41 @@ Get the ArgoCD password:
 ```
 ARGO_PWD=$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo)
 ```
-
-## Configure ArgoCD (One-off task)
-
-Login and go to `Settings` > `Repositories`
-
-Connect `via HTTPS` to `https://github.com/agardnerIT/openfeature-perform2023` (you will have to fork your own copy)
-type: `git`
-Create a GitHub PAT token with Repo scope
-Project: `default`
-Password: `your Git PAT token`
-
-## ArgoCD application for cert-manager (required by KLT) (One-off task)
-Go to applications and create application:
-
+#### install the argocd cli
 ```
-application name: cert-manager
-project name: default
-sync policy: manual
-repository: you/openfeature-perform2023
-revision: HEAD
-path: cert-manager
-cluster url: https://kubernetes.default.svc
-namespace: cert-manager
-```
-![cert manager](assets/cert-manager.png)
-
-## ArgoCD application for fibonacci (One-off task)
-Go to applications and create application:
-
-```
-application name: fibonacci
-project name: default
-sync policy: manual
-repository: you/openfeature-perform2023
-revision: HEAD
-path: fibonacci/helm/fibonacci
-cluster url: https://kubernetes.default.svc
+VERSION=$(curl --silent "https://api.github.com/repos/argoproj/argo-cd/releases/latest" | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
+curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/download/$VERSION/argocd-linux-amd64
+chmod +x /usr/local/bin/argocd
 ```
 
-![fibonacci](assets/fibonacci.png)
-
-## ArgoCD application for fib3r (One-off task)
-Go to applications and create application:
-
+#### connect the cli with the ArgoCD server
 ```
-application name: fib3r
-project name: default
-sync policy: manual
-repository: you/openfeature-perform2023
-revision: HEAD
-path: fib3r/helm/fib3r
-cluster url: https://kubernetes.default.svc
+argocd login https://argocd.$IP.nip.io --username admin  --password $ARGO_PWD
 ```
 
-![fib3r](assets/fib3r.png)
-
-Click create and sync
-
-Check everything works:
-
-`kubectl -n default get pods` should show a `fib3r` pod and a `fibonacci` pod.
-`kubectl get services` should show a public LoadBalancer IP for `fib3r`.
-
-The application is deployed and accessible.
-
-## ArgoCD application for Keptn Lifecycle Toolkit (One-off task)
-
-Go to applications and create application:
-
+#### create the git repository in the argocd server
 ```
-application name: klt
-project name: default
-sync policy: manual
-repository: you/openfeature-perform2023
-revision: HEAD
-path: klt
-cluster url: https://kubernetes.default.svc
-namespace: keptn-lifecycle-toolkit-system
+GITHUB_REPO_URL=<Your FORK GITHUB REPO>
+GITHUB_USER=<GITHUB USER NAME>
+GITHUB_PAT_TOKEN=<YOUR GITHUB PAT TOKEN>
+argocd repo add $GITHUB_REPO_URL --username $GITHUB_USER --password $GITHUB_PAT_TOKEN --insecure-skip-server-verification
 ```
 
-![klt](assets/klt.png)
+
+#### Create the argocd applications
+```
+kubectl apply -f argocd/applications.yaml
+argocd app sync fibonacci
+argicd app sync fib3r
+```
+
+#### Create Prometheus ServiceMonitors
+```
+kubectl apply -f argocd/service_monitor.yaml
+```
+
+### 5. Keptn LifeCycle Toolkit
+
 
 ## Webhook.site URL
 
@@ -292,9 +269,10 @@ Create a DT Access token with:
 - `events.read`
 
 ```
+DT_TOKEN=<TOKEN VALUE>
 cd openfeature-perform2023/dt_setup
 chmod +x setup.sh
-./setup.sh https://abc12345.live.dynatrace.com dt01c01.sample.secret
+./setup.sh $DT_TENANT_URL $DT_TOKEN
 ```
 
 This script:
@@ -329,90 +307,19 @@ Now that DT is configured, each time Argo goes out-of-sync or back in-sync, you 
 
 ## Install otel collector
 
-1. Make a note of your DT tenant URL like: `https://abc12345.live.dynatrace.com` (no trailing slash)
-2. Create a `ConfigMap` with the following:
-
 ```
-cat <<EOF > otel-collector-configmap.yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: otel-collector-conf
-  namespace: keptn-lifecycle-toolkit-system
-  labels:
-    app: opentelemetry
-    component: otel-collector-conf
-data:
-  otel-collector-config: |
-    receivers:
-      # Make sure to add the otlp receiver.
-      # This will open up the receiver on port 4317
-      otlp:
-        protocols:
-          grpc:
-            endpoint: "0.0.0.0:4317"
-      prometheus:
-        config:
-          scrape_configs:
-            - job_name: 'otel-collector'
-              scrape_interval: 5s
-              static_configs:
-                - targets: ['klc-controller-manager-metrics-service:2222']
-    processors:
-    extensions:
-      health_check: {}
-    exporters:
-      otlphttp:
-        endpoint: "DT_TENANT_URL_TO_REPLACE/api/v2/otlp"
-        headers:
-          Authorization: "Api-Token API_TOKEN_TO_REPLACE"
-      jaeger:
-        endpoint: "otel-collector:14250"
-        tls:
-          insecure: true
-      prometheus:
-        endpoint: 0.0.0.0:8889
-      logging:
-    service:
-      extensions: [health_check]
-      pipelines:
-        traces:
-          receivers: [otlp]
-          processors: []
-          exporters: [jaeger, otlphttp]
-        metrics:
-          receivers: [otlp,prometheus]
-          processors: []
-          exporters: [prometheus, logging, otlphttp]
-EOF
+kubectl apply -f observability/rbac.yaml
+kubectl apply -f observability/openTelemetry-manifest_prometheus.yaml
 ```
 
-3. Modify that file and replace `DT_TENANT_URL` with your DT tenant URL : $DT_TENANT_URL
-   The final URL should look like: `https://abc12345.live.dynatrace.com/api/v2/otlp`
 
-4. Modify that file and replace `Api-Token API_TOKEN_TO_REPLACE`. with the variable : $DATA_INGEST_TOKEN
-5. Create the `ConfigMap`: `kubectl apply -f otel-collector-configmap.yaml`
-6. Create a new app in argo. Point it to the `observability` folder.
-
-## Deploy Prometheus
-
-Deploy Prometheus to ingest metrics from KLT to Dynatrace.
-
-1. Create a new Argo App called `prometheus`
-2. project = default
-3. namespace = `monitoring`
-4. repo url = `https://github.com/prometheus-community/helm-charts`
-5. path = `charts/prometheus`
-
-![](assets/argo-app-prometheus.png)
 
 ## Grafana
-Grafana is available via a LoadBalancer on port 3000.
-
-Initial login is `admin` / `admin` but then it prompts to reset password.
 
 ```
-http://35.193.247.69:3000/
+echo User: $USER_GRAFANA
+echo Password: $PASSWORD_GRAFANA
+echo grafana url : http://grafana.IP_TO_REPLACE.nip.io"
 ```
 
 
