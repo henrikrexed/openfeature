@@ -58,7 +58,7 @@ sed -i "s,IP_TO_REPLACE,$IP," observability/ingress.yaml
 
 ### 2. Prometheus Operator
 ```
-helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts --set grafana.sidecar.dashboards.enabled=true
 helm repo update
 helm install prometheus prometheus-community/kube-prometheus-stack
 kubectl apply -f observability/ingress.yaml
@@ -177,7 +177,23 @@ argocd app sync fibonacci
 argocd app sync fib3r
 ```
 
-### 5. Keptn LifeCycle Toolkit
+### 6. Keptn LifeCycle Toolkit
+```shell
+kubectl apply -f https://github.com/keptn/lifecycle-toolkit/releases/download/v0.5.0/manifest.yaml
+```
+#### 1. Modify Keptn LifeCycle Toolkit
+We will change the otel collector url define in the KLS in 2 deployments :
+
+##### Update Deployment klc-controller-manager
+```shell
+kubectl edit deployment  klc-controller-manager -n keptn-lifecycle-toolkit-system
+```
+Change the `OTEL_COLLECTOR_URL` to use `oteld-collector.default.svc.cluster.local:4317`
+##### Update Deployment keptn-scheduler
+```shell
+kubectl edit deployment  keptn-scheduler -n keptn-lifecycle-toolkit-system
+```
+Change the `OTEL_COLLECTOR_URL` to use `oteld-collector.default.svc.cluster.local:4317`
 
 
 ## Webhook.site URL
@@ -268,7 +284,7 @@ Create a DT Access token with:
 
 ```
 DT_TOKEN=<TOKEN VALUE>
-cd openfeature-perform2023/dt_setup
+cd dt_setup
 chmod +x setup.sh
 ./setup.sh $DT_TENANT_URL $DT_TOKEN
 ```
@@ -308,9 +324,10 @@ Now that DT is configured, each time Argo goes out-of-sync or back in-sync, you 
 ```
 kubectl apply -f observability/rbac.yaml
 kubectl apply -f observability/openTelemetry-manifest_prometheus.yaml
+kubectl apply -f observability/grafana-dashboard-keptn-overview.yaml
+kubectl apply -f observability/grafana-dashboard-keptn-workloads.yaml
+kubectl apply -f observability/grafana-dashboard-keptn-workloads.yaml
 ```
-
-
 
 ## Grafana
 
@@ -319,8 +336,6 @@ echo User: $USER_GRAFANA
 echo Password: $PASSWORD_GRAFANA
 echo grafana url : http://grafana.IP_TO_REPLACE.nip.io"
 ```
-
-
 
 ## Dynatrace Gen3 Notebook
 
