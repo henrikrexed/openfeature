@@ -69,7 +69,7 @@ USER_GRAFANA=$(kubectl get secret --namespace default prometheus-grafana -o json
 ### 3. OpenTelemetry Operator
 #### 1. Cert-manager
 ```
-kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.6.1/cert-manager.yaml
+kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.10.0/cert-manager.yaml
 kubectl wait pod -l app.kubernetes.io/component=webhook -n cert-manager --for=condition=Ready --timeout=2m
 ```
 #### 2. OpenTelemetry Operator
@@ -77,8 +77,17 @@ kubectl wait pod -l app.kubernetes.io/component=webhook -n cert-manager --for=co
 kubectl apply -f https://github.com/open-telemetry/opentelemetry-operator/releases/latest/download/opentelemetry-operator.yaml
 ```
 
-
-### 4. Dynatrace Tenant
+### 4. ArgoCD
+```
+kubectl create namespace argocd
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+kubectl -n argocd apply -f argo-access-service.yaml
+```
+Get the ArgoCD password:
+```
+ARGO_PWD=$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo)
+```
+### 5. Dynatrace Tenant
 #### 1. Dynatrace Tenant - start a trial
 If you don't have any Dyntrace tenant , then i suggest to create a trial using the following link : [Dynatrace Trial](https://bit.ly/3KxWDvY)
 Once you have your Tenant save the Dynatrace (including https) tenant URL in the variable `DT_TENANT_URL` (for example : https://dedededfrf.live.dynatrace.com)
@@ -134,16 +143,7 @@ kubectl -n dynatrace create secret generic dynakube --from-literal="apiToken=$DY
 kubectl apply -f dynatrace/dynakube.yaml -n dynatrace
 ```
 
-### 5. ArgoCD
-```
-kubectl create namespace argocd
-kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-kubectl -n argocd apply -f argo-access-service.yaml
-```
-Get the ArgoCD password:
-```
-ARGO_PWD=$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo)
-```
+
 #### install the argocd cli
 ```
 VERSION=$(curl --silent "https://api.github.com/repos/argoproj/argo-cd/releases/latest" | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
@@ -153,7 +153,7 @@ chmod +x /usr/local/bin/argocd
 
 #### connect the cli with the ArgoCD server
 ```
-argocd login https://argocd.$IP.nip.io --username admin  --password $ARGO_PWD
+argocd login https://argocd.$IP.nip.io --username admin  --password $ARGO_PWD --insecure
 ```
 
 #### create the git repository in the argocd server
@@ -164,17 +164,17 @@ GITHUB_PAT_TOKEN=<YOUR GITHUB PAT TOKEN>
 argocd repo add $GITHUB_REPO_URL --username $GITHUB_USER --password $GITHUB_PAT_TOKEN --insecure-skip-server-verification
 ```
 
+#### Create Prometheus ServiceMonitors
+```
+kubectl apply -f argocd/service_monitor.yaml
+```
+
 
 #### Create the argocd applications
 ```
 kubectl apply -f argocd/applications.yaml
 argocd app sync fibonacci
-argicd app sync fib3r
-```
-
-#### Create Prometheus ServiceMonitors
-```
-kubectl apply -f argocd/service_monitor.yaml
+argocd app sync fib3r
 ```
 
 ### 5. Keptn LifeCycle Toolkit
@@ -190,19 +190,17 @@ These files will force argo to notify DT events v2 API (and the webhook.site pag
 
 1) Every time argo goes out-of-sync (send a CUSTOM_INFO event)
 2) Every time argo goes back in sync (send a CUSTOM_DEPLOYMENT event)
-
-Modify `openfeature-perform2023/argocd/argocd-notifications-secret.yaml` with your details.
-
 ```
+WEBSOCKET_URL=<YOUR WEBSOCKET URL>
+sed -i "s,WEBSOCKET_URL_TO_REPLACE,$WEBSOCKET_URL," argocd/argocd-notifications-secret.yaml
 kubectl -n argocd apply -f openfeature-perform2023/argocd/argocd-notifications-secret.yaml
 ```
-
-DO NOT COMMIT THIS FILE TO Git. TODO (future): Use sealed-secrets?
-
 Now apply the `notifications-cm.yaml` (as-is because it relies on the secrets ConfigMap you just created)
 
 ```
-kubectl -n argocd apply -f openfeature-perform2023/argocd/notifications-cm.yaml
+sed -i "s,GITHUB_REPO_URL,$GITHUB_REPO_URL," argocd/argocd-notifications-secret.yaml
+sed -i "s,TOKEN_TO_REPLACE,$DATA_INGEST_TOKEN," argocd/argocd-notifications-secret.yaml
+kubectl -n argocd apply -f argocd/notifications-cm.yaml
 ```
 
 ## Add Notification subscriptions to apps in argo (One-off task)
