@@ -70,14 +70,13 @@ spec:
           Authorization: "Api-Token DT_TOKEN_TO_REPLACE"
 
     service:
-      extensions: [health_check]
       pipelines:
-        traces:
-          receivers: [otlp]
-          processors: [memory_limiter,k8sattributes,batch]
-          exporters: [otlphttp]
-        metrics:
-          receivers: [otlp,prometheus]
-          processors: [memory_limiter,k8sattributes,batch]
-          exporters: [otlphttp,prometheus]
+       traces:
+         receivers: [otlp]
+         processors: [memory_limiter,k8sattributes,batch]
+         exporters: [otlphttp]
+       metrics:
+         receivers: [otlp,prometheus]
+         processors: [memory_limiter,k8sattributes,batch]
+         exporters: [otlphttp,prometheus]
 

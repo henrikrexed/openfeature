@@ -95,7 +95,7 @@ Once you have your Tenant save the Dynatrace (including https) tenant URL in the
 DT_TENANT_URL=<YOUR TENANT URL>
 sed -i "s,DT_TENANT_URL_TO_REPLACE,$DT_TENANT_URL," dynatrace/dynakube.yaml
 sed -i "s,DT_TENANT_URL_TO_REPLACE,$DT_TENANT_URL," klt/trigger-dt-synthetics-ktd.yaml
-sed -i "s,DT_URL_TO_REPLACE,$DT_TENANT_URL," observability/otel-collector.yaml
+sed -i "s,DT_URL_TO_REPLACE,$DT_TENANT_URL," observability/openTelemetry-manifest_prometheus.yaml
 ```
 
 
@@ -131,7 +131,7 @@ Save the value of the token . We will use it later to store in a k8S secret
 
 ```
 DATA_INGEST_TOKEN=<YOUR TOKEN VALUE>
-sed -i "s,DT_TOKEN_TO_REPLACE,$DATA_INGEST_TOKEN," observability/otel-collector.yaml
+sed -i "s,DT_TOKEN_TO_REPLACE,$DATA_INGEST_TOKEN," observability/openTelemetry-manifest_prometheus.yaml
 ```
 ##### Deploy the Dynatrace Operator 
 ```
