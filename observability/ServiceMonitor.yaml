@@ -2,10 +2,12 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: otel-servicemonitor
+  labels:
+    release: prometheus
 spec:
   selector:
     matchLabels:
-      app: opentelemetry
+      operator.opentelemetry.io/collector-headless-service: Exists
   endpoints:
     - port: prometheus
       interval: 10s

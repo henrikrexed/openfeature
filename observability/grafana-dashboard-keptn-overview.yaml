@@ -2,8 +2,8 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: grafana-dashboard-keptn-overview
-  annotations:
-    grafana_dashboard: "keptn-overview"
+  labels:
+    grafana_dashboard: "1"
 data:
   grafana_dashboard_overview.json: |-
     {
@@ -38,8 +38,7 @@ data:
       "panels": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "P1809F7CD0C75ACF3"
+            "type": "prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -115,8 +114,7 @@ data:
           "targets": [
             {
               "datasource": {
-                "type": "prometheus",
-                "uid": "P1809F7CD0C75ACF3"
+                "type": "prometheus"
               },
               "editorMode": "builder",
               "expr": "sum by(job) (keptn_task_active{job=\"otel-collector\"})",
@@ -207,8 +205,7 @@ data:
           "targets": [
             {
               "datasource": {
-                "type": "prometheus",
-                "uid": "P1809F7CD0C75ACF3"
+                "type": "prometheus"
               },
               "editorMode": "builder",
               "expr": "sum by(job) (keptn_evaluation_active{job=\"otel-collector\"})",
@@ -299,8 +296,7 @@ data:
           "targets": [
             {
               "datasource": {
-                "type": "prometheus",
-                "uid": "P1809F7CD0C75ACF3"
+                "type": "prometheus"
               },
               "editorMode": "builder",
               "expr": "sum by(job) (keptn_task_count{job=\"otel-collector\"})",
@@ -391,8 +387,7 @@ data:
           "targets": [
             {
               "datasource": {
-                "type": "prometheus",
-                "uid": "P1809F7CD0C75ACF3"
+                "type": "prometheus"
               },
               "editorMode": "builder",
               "expr": "sum by(job) (keptn_evaluation_count_total{job=\"otel-collector\"})",
@@ -456,8 +451,7 @@ data:
           "targets": [
             {
               "datasource": {
-                "type": "prometheus",
-                "uid": "P1809F7CD0C75ACF3"
+                "type": "prometheus"
               },
               "editorMode": "builder",
               "exemplar": false,
@@ -501,8 +495,7 @@ data:
         },
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "P1809F7CD0C75ACF3"
+            "type": "prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -551,8 +544,7 @@ data:
           "targets": [
             {
               "datasource": {
-                "type": "prometheus",
-                "uid": "P1809F7CD0C75ACF3"
+                "type": "prometheus"
               },
               "editorMode": "builder",
               "exemplar": false,
@@ -596,8 +588,7 @@ data:
         },
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "P1809F7CD0C75ACF3"
+            "type": "prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -673,8 +664,7 @@ data:
           "targets": [
             {
               "datasource": {
-                "type": "prometheus",
-                "uid": "P1809F7CD0C75ACF3"
+                "type": "prometheus"
               },
               "editorMode": "builder",
               "expr": "sum by(job) (keptn_deployment_active{job=\"otel-collector\"})",
@@ -764,8 +754,7 @@ data:
           "targets": [
             {
               "datasource": {
-                "type": "prometheus",
-                "uid": "P1809F7CD0C75ACF3"
+                "type": "prometheus"
               },
               "editorMode": "builder",
               "expr": "sum by(job) (keptn_deployment_count{job=\"otel-collector\"})",
@@ -828,8 +817,7 @@ data:
           "targets": [
             {
               "datasource": {
-                "type": "prometheus",
-                "uid": "P1809F7CD0C75ACF3"
+                "type": "prometheus"
               },
               "editorMode": "builder",
               "exemplar": false,
@@ -886,7 +874,6 @@ data:
       "timepicker": {},
       "timezone": "",
       "title": "Keptn Lifecycle Toolkit Metrics",
-      "uid": "wlo2MpIVk",
       "version": 1,
       "weekStart": ""
     }
